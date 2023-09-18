@@ -1,6 +1,6 @@
 def Floyd():
     # 维护任意地标间的最短路径
-
+    return
 
 
 def findPath(pos_start_name: str, pos_end_name: str):
