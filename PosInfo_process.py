@@ -37,9 +37,4 @@ with open(csv_file_path, mode='a', newline='') as csv_file:
         row = {'位置': position, '口罩': data['口罩'], '药品': data['药品'], '食物': data['食物']}
         writer.writerow(row)
 
-# 从CSV文件中读取数据
-with open(csv_file_path, mode='r') as csv_file:
-    reader = csv.DictReader(csv_file)
 
-    for row in reader:
-        print(row['位置'], row['口罩'], row['药品'], row['食物'])
