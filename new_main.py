@@ -4,7 +4,24 @@ import os
 
 import csv
 
-def findPath_floyd(pos_start_name, pos_end_name):
+def findPath(pos_start_name, pos_end_name, distance_matrix, route_matrix, locations):
+    # 查找并打印输入参数的最短路径和距离
+    start_index = locations.index(pos_start_name)
+    end_index = locations.index(pos_end_name)
+    shortest_distance = distance_matrix[start_index][end_index]
+    # 构建最短路径
+    path = [pos_end_name]
+    while route_matrix[start_index][end_index] != start_index:
+        end_index = route_matrix[start_index][end_index]
+        path.append(locations[end_index])
+    path.append(pos_start_name)
+    # 逆置path列表
+    path.reverse()
+
+    print(f"从{pos_start_name}到{pos_end_name}的最短路径为: {' -> '.join(path)}，距离为{shortest_distance}")
+    return
+
+def floyd(dm, rm, locations):
     # 读取CSV文件并构建距离字典
     distance_dict = {}
     with open('roads.csv', mode='r') as csv_file:
@@ -18,7 +35,9 @@ def findPath_floyd(pos_start_name, pos_end_name):
                 distance_dict[start_name] = {}
             distance_dict[start_name][end_name] = distance
     # 获取所有唯一的位置
-    locations = list(distance_dict.keys())
+    ls = list(distance_dict.keys())
+    for i in ls:
+        locations.append(i)
     # 初始化距离矩阵和路由矩阵
     num_locations = len(locations)
     distance_matrix = [[float('inf')] * num_locations for _ in range(num_locations)]
@@ -41,21 +60,11 @@ def findPath_floyd(pos_start_name, pos_end_name):
                 if distance_matrix[i][j] > distance_matrix[i][k] + distance_matrix[k][j]:
                     distance_matrix[i][j] = distance_matrix[i][k] + distance_matrix[k][j]
                     route_matrix[i][j] = route_matrix[k][j]
+    for i in distance_matrix:
+        dm.append(i)
+    for i in route_matrix:
+        rm.append(i)
 
-    # 查找并打印输入参数的最短路径和距离
-    start_index = locations.index(pos_start_name)
-    end_index = locations.index(pos_end_name)
-    shortest_distance = distance_matrix[start_index][end_index]
-    # 构建最短路径
-    path = [pos_end_name]
-    while route_matrix[start_index][end_index] != start_index:
-        end_index = route_matrix[start_index][end_index]
-        path.append(locations[end_index])
-    path.append(pos_start_name)
-    # 逆置path列表
-    path.reverse()
-
-    print(f"从{pos_start_name}到{pos_end_name}的最短路径为: {' -> '.join(path)}，距离为{shortest_distance}")
     return
 
 def readPosInfo(Posdict: dict, csv_file_path = 'data.csv'):
@@ -86,12 +95,19 @@ if __name__ == '__main__':
     readPosInfo(pos_dict)
     road_dict = {}
     readRoadInfo(road_dict)
-    #x = _class.Road("医院", {"口罩": 100})
-    #pos_dict[x.name] = x
+
+    locations = [] # 各个结点位置
+    distance_matrix = [] # 距离矩阵
+    route_matrix = [] # 路由矩阵
+    floyd(distance_matrix, route_matrix, locations)
+    findPath('第一医院','火葬场',distance_matrix, route_matrix, locations)
+
+    # x = _class.Road("医院", {"口罩": 100})
+    # pos_dict[x.name] = x
     # x.insertPos(['启翔湖', '东北', 1])
     # print(x.findPosInfo())
     # print(pos_dict[x.name].obj)
-    print(pos_dict)
-    print(road_dict)
-    findPath_floyd("第一医院", "第一小学")
+    # print(pos_dict)
+    # print(road_dict)
+
 
