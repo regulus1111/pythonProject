@@ -1,95 +1,103 @@
-def Floyd():
-    # 维护任意地标间的最短路径
+import _class
+import csv
+import os
+
+def findPath(pos_start_name, pos_end_name, distance_matrix, route_matrix, locations):
+    # 查找并打印输入参数的最短路径和距离
+    start_index = locations.index(pos_start_name)
+    end_index = locations.index(pos_end_name)
+    shortest_distance = distance_matrix[start_index][end_index]
+    # 构建最短路径
+    path = [pos_end_name]
+    while route_matrix[start_index][end_index] != start_index:
+        end_index = route_matrix[start_index][end_index]
+        path.append(locations[end_index])
+    path.append(pos_start_name)
+    # 逆置path列表
+    path.reverse()
+
+    print(f"从{pos_start_name}到{pos_end_name}的最短路径为: {' -> '.join(path)}，距离为{shortest_distance}")
     return
 
+def floyd(dm, rm, locations):
+    # 读取CSV文件并构建距离字典
+    distance_dict = {}
+    with open('roads.csv', mode='r') as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            start_name = row['起始位置']
+            end_name = row['目标位置']
+            distance = float(row['距离'])
 
-def findPath(pos_start_name: str, pos_end_name: str):
-    # 路由表中找最短路径
-    dis = 0
+            if start_name not in distance_dict:
+                distance_dict[start_name] = {}
+            distance_dict[start_name][end_name] = distance
+    # 获取所有唯一的位置
+    ls = list(distance_dict.keys())
+    for i in ls:
+        locations.append(i)
+    # 初始化距离矩阵和路由矩阵
+    num_locations = len(locations)
+    distance_matrix = [[float('inf')] * num_locations for _ in range(num_locations)]
+    route_matrix = [[-1] * num_locations for _ in range(num_locations)]
 
-    return dis
+    # 填充距离矩阵
+    for i in range(num_locations):
+        for j in range(num_locations):
+            if i != j:
+                pos_start_name_i = locations[i]
+                pos_end_name_j = locations[j]
+                if pos_end_name_j in distance_dict.get(pos_start_name_i, {}):
+                    distance_matrix[i][j] = distance_dict[pos_start_name_i][pos_end_name_j]
+                    route_matrix[i][j] = i  # 设置路由矩阵初始值为直接连接的起始位置索引
 
+    # 弗洛伊德算法
+    for k in range(num_locations):
+        for i in range(num_locations):
+            for j in range(num_locations):
+                if distance_matrix[i][j] > distance_matrix[i][k] + distance_matrix[k][j]:
+                    distance_matrix[i][j] = distance_matrix[i][k] + distance_matrix[k][j]
+                    route_matrix[i][j] = route_matrix[k][j]
+    for i in distance_matrix:
+        dm.append(i)
+    for i in route_matrix:
+        rm.append(i)
 
-def insertPos(pos_dict: dict, pos_name: str, obj_info: dict):
-    # 添加地标
-    pos_dict[pos_name] = obj_info
+    return
 
+def readPosInfo(Posdict: dict, csv_file_path = 'data.csv'):
+    # 从CSV文件中读取数据
+    with open(csv_file_path, mode='r') as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            Posdict[row['位置']] = {"口罩": row['口罩'], "药品": row['药品'], "食物": row['食物']}
+    return
 
-def insertRoad(road_dict: dict, pos_cur: str, road_info: list):
-    # 添加路径
-    road_dict[pos_cur] = road_info
+def readRoadInfo(road_dict: dict, csv_file_path = 'roads.csv'):
+    with open(csv_file_path, mode='r') as csv_file:
+        reader = csv.DictReader(csv_file)
 
+        for row in reader:
+            source = row['起始位置']
+            destination = row['目标位置']
+            direction = row['方向']
+            distance = float(row['距离'])
 
-def findPosInfo():
-    # 查找地标信息
-    pos_name: str
-    pos_name = input("要查找的地标：")
-    pos_info = pos_dict[pos_name]
-    print(pos_name)
-    print(pos_info)
+            if source not in road_dict:
+                road_dict[source] = []
+            road_dict[source].append([destination, direction, distance])
+    return
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    pos_dict: dict = {}
-    road_dict: dict = {}
-    # 创建城市地标
-    insertPos(pos_dict, '第一医院', {'口罩': 20000, '药品': 10000, '食物': 500})
-    insertPos(pos_dict, '第二医院', {'口罩': 20000, '药品': 15000, '食物': 500})
-    insertPos(pos_dict, '第一小学', {'口罩': 1000, '药品': 100, '食物': 1000})
-    insertPos(pos_dict, '第一中学', {'口罩': 3000, '药品': 100, '食物': 2000})
-    insertPos(pos_dict, '启翔湖', {'口罩': -200, '药品': -100, '食物': -50})
-    insertPos(pos_dict, '碧桂园一期', {'口罩': 30000, '药品': 2000, '食物': 10000})
-    insertPos(pos_dict, '碧桂园二期', {'口罩': 40000, '药品': 3000, '食物': 18000})
-    insertPos(pos_dict, '碧桂园三期', {'口罩': 30000, '药品': 1000, '食物': 12000})
-    insertPos(pos_dict, '万达', {'口罩': 2000, '药品': 100, '食物': 1000})
-    insertPos(pos_dict, '写字楼', {'口罩': 5000, '药品': 100, '食物': 500})
-    insertPos(pos_dict, '消防站', {'口罩': 4000, '药品': 500, '食物': 1200})
-    insertPos(pos_dict, '警察局', {'口罩': 4000, '药品': 600, '食物': 1500})
-    insertPos(pos_dict, '火葬场', {'口罩': 1000, '药品': 200, '食物': 1800})
-    insertPos(pos_dict, '大雁塔', {'口罩': -100, '药品': -50, '食物': -20})
-    # 创建道路
-    insertRoad(road_dict, '第一医院', ['启翔湖', '东北', 1])
-    insertRoad(road_dict, '第一医院', ['碧桂园一期', '南', 2])
-    insertRoad(road_dict, '第一医院', ['大雁塔', '东北', 3])
-    insertRoad(road_dict, '第一医院', ['写字楼', '东南', 4])
-    insertRoad(road_dict, '第二医院', ['碧桂园二期', '北', 2])
-    insertRoad(road_dict, '第二医院', ['碧桂园三期', '西南', 1])
-    insertRoad(road_dict, '第二医院', ['火葬场', '东南', 1.5])
-    insertRoad(road_dict, '第一小学', ['启翔湖', '西', 6])
-    insertRoad(road_dict, '第一小学', ['写字楼', '西南', 5])
-    insertRoad(road_dict, '第一小学', ['万达', '南', 1.5])
-    insertRoad(road_dict, '第一小学', ['碧桂园一期', '东北', 0.5])
-    insertRoad(road_dict, '第一中学', ['碧桂园二期', '东北', 0.5])
-    insertRoad(road_dict, '第一中学', ['消防站', '东', 1])
-    insertRoad(road_dict, '碧桂园一期', ['第一医院', '北', 2])
-    insertRoad(road_dict, '碧桂园一期', ['第一中学', '西南', 0.5])
-    insertRoad(road_dict, '碧桂园二期', ['第二医院', '南', 2])
-    insertRoad(road_dict, '碧桂园二期', ['大雁塔', '西', 10])
-    insertRoad(road_dict, '碧桂园二期', ['第一小学', '西南', 0.5])
-    insertRoad(road_dict, '碧桂园三期', ['万达', '北', 0.5])
-    insertRoad(road_dict, '碧桂园三期', ['第二医院', '东北', 1])
-    insertRoad(road_dict, '碧桂园三期', ['警察局', '西南', 1])
-    insertRoad(road_dict, '万达', ['第一小学', '北', 1.5])
-    insertRoad(road_dict, '万达', ['写字楼', '西', 0.5])
-    insertRoad(road_dict, '万达', ['碧桂园三期', '南', 0.5])
-    insertRoad(road_dict, '写字楼', ['第一小学', '东北', 5])
-    insertRoad(road_dict, '写字楼', ['万达', '东', 0.5])
-    insertRoad(road_dict, '写字楼', ['警察局', '南', 2])
-    insertRoad(road_dict, '写字楼', ['消防站', '西南', 2])
-    insertRoad(road_dict, '写字楼', ['第一医院', '西北', 4])
-    insertRoad(road_dict, '消防站', ['写字楼', '东北', 2])
-    insertRoad(road_dict, '消防站', ['警察局', '东南', 3])
-    insertRoad(road_dict, '消防站', ['第一中学', '西', 1])
-    insertRoad(road_dict, '警察局', ['消防站', '西北', 3])
-    insertRoad(road_dict, '警察局', ['写字楼', '北', 2])
-    insertRoad(road_dict, '警察局', ['碧桂园三期', '东北', 1])
-    insertRoad(road_dict, '火葬场', ['第二医院', '西北', 1.5])
-    insertRoad(road_dict, '大雁塔', ['第一医院', '西南', 3])
-    insertRoad(road_dict, '大雁塔', ['碧桂园二期', '东', 10])
-    # 查找最小路径
-    pos_start_name = ''
-    pos_end_name = ''
-    pos_start_name = input("起始地标：")
-    pos_end_name = input("目的地标：")
-    print(findPath())
+    pos_dict = {}
+    readPosInfo(pos_dict)
+    road_dict = {}
+    readRoadInfo(road_dict)
+    # print(pos_dict)
+    # print(road_dict)
+    locations = [] # 各个结点位置
+    distance_matrix = [] # 距离矩阵
+    route_matrix = [] # 路由矩阵
+    floyd(distance_matrix, route_matrix, locations)
+    findPath("第一医院", "火葬场", distance_matrix, route_matrix, locations)
+
