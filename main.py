@@ -65,6 +65,13 @@ def floyd(dm, rm, locations):
 
     return
 
+# def find_multiPath(roads: list, dm: list, rm: list):
+#     start = roads[0]
+#     end = roads.reverse()[0]
+#     path = []
+#     for i in rm:
+#     return
+
 def readPosInfo(Posdict: dict, csv_file_path = 'data.csv'):
     # 从CSV文件中读取数据
     with open(csv_file_path, mode='r') as csv_file:
@@ -100,4 +107,7 @@ if __name__ == '__main__':
     route_matrix = [] # 路由矩阵
     floyd(distance_matrix, route_matrix, locations)
     findPath("第一医院", "火葬场", distance_matrix, route_matrix, locations)
+    print(distance_matrix)
+    print(route_matrix)
+    roads = ["第一医院","碧桂园三期","第二医院","火葬场"]
 

@@ -17,7 +17,7 @@ road_dict = {
         ['启翔湖', '西', 6],
         ['写字楼', '西南', 5],
         ['万达', '南', 1.5],
-        ['碧桂园一期', '东北', 0.5]
+        ['碧桂园二期', '东北', 0.5]
     ],
     '第一中学': [
         ['碧桂园一期', '东北', 0.5],
@@ -30,7 +30,7 @@ road_dict = {
     ],
     '碧桂园一期': [
         ['第一医院', '北', 2],
-        ['第一小学', '西南', 0.5],
+        ['第一中学', '西南', 0.5],
         # 其他道路数据
     ],
     '碧桂园二期': [
@@ -101,10 +101,10 @@ if not os.path.exists(csv_file_path):
         writer.writeheader()  # 写入表头
 
 # 写入道路数据到CSV文件
-with open(csv_file_path, mode='a', newline='') as csv_file:
+with open(csv_file_path, mode='w', newline='') as csv_file:
     fieldnames = ['起始位置', '目标位置', '方向', '距离']
     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-
+    writer.writeheader()  # 写入表头
     for source, road_data_list in road_dict.items():
         for road_data in road_data_list:
             row = {'起始位置': source, '目标位置': road_data[0], '方向': road_data[1], '距离': road_data[2]}
