@@ -65,12 +65,36 @@ def floyd(dm, rm, locations):
 
     return
 
-# def find_multiPath(roads: list, dm: list, rm: list):
-#     start = roads[0]
-#     end = roads.reverse()[0]
-#     path = []
-#     for i in rm:
-#     return
+
+def dfs(start: str, end: str, p: list, v: list, ls: list, dm, rm, file):
+    v[ls.index(start)] = 1
+    p.append(start)
+    if start == end:
+        file.write(' '.join(p) + '\n')  # 将路径写入文件
+        v[ls.index(start)] = 0
+        p.pop()
+        return
+    for i in road_dict[start]:
+        if v[ls.index(i[0])] == 1:
+            continue
+        dfs(i[0], end, p, v, ls, dm, rm, file)
+    v[ls.index(start)] = 0
+    p.pop()
+    return
+
+
+def find_multiPath(roads: list, dm: list, rm: list, ls: list):
+    start = roads[0]
+    end = roads[len(roads) - 1]
+    path = []
+    v = []
+    for i in ls:
+        v.append(0)
+
+    with open('path_ans.txt', 'w') as file:  # 使用with语句打开文件
+        dfs(start, end, path, v, ls, dm, rm, file)  # 传入文件对象
+    return
+
 
 def readPosInfo(Posdict: dict, csv_file_path = 'data.csv'):
     # 从CSV文件中读取数据
@@ -107,7 +131,19 @@ if __name__ == '__main__':
     route_matrix = [] # 路由矩阵
     floyd(distance_matrix, route_matrix, locations)
     findPath("第一医院", "火葬场", distance_matrix, route_matrix, locations)
-    print(distance_matrix)
-    print(route_matrix)
-    roads = ["第一医院","碧桂园三期","第二医院","火葬场"]
+    roads = ["碧桂园一期", "碧桂园三期", "第一医院", "火葬场"]
+    find_multiPath(roads, distance_matrix, route_matrix, locations)
+
+    path_ans = []  # 初始化 path_ans 列表
+
+    # 读取文本文件
+    with open('path_ans.txt', 'r') as file:
+        for line in file:
+            # 去除行尾的换行符并按空格分割成列表
+            line_data = line.strip().split()
+            path_ans.append(line_data)  # 将列表添加到 path_ans 中
+
+    # 打印 path_ans 列表
+    for item in path_ans:
+        print(item)
 
