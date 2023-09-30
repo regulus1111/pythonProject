@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="css/index.css"/>
+		<script src="js/fix_topnav.js" type="text/javascript" charset="utf-8"></script>
+		<title>前端学习</title>
+	</head>
+	<body>
+		<div class="header" id="header">
+		</div>
+		<div class="topnav" id="topnav">
+			<ul>
+				<div class="dropdown active"></div>
+			</ul>
+		</div>
+		<div class="UI-info">
+			<h2>{{search_title}}</h2>
+			<p>{{msg}}</p>
+		</div>
+		<hr>
+		<div class="UI-info">
+			<h2>查询地标处信息</h2>
+			<form action="/search-post/" method="post">
+        		{% csrf_token %}
+        		<input type="text" name="q">
+        		<input type="submit" value="搜索">
+    		</form>
+			<p>选择地标后可以输出对应地标处信息</p>
+		</div>
+		<hr >
+		<div class="UI-info">
+			<h2>HTML元素</h2>
+			<p>"HTML 标签" 和 "HTML 元素" 通常都是描述同样的意思.</p>
+			<p>但是严格来讲, 一个 HTML 元素包含了开始标签与结束标签，如下实例:</p>
+			<div class="code">
+			<ol>
+				<li><span style="color: royalblue;">&ltp&gt</span>hello world<span style="color: royalblue;">&lt/p&gt</span></li>
+			</ol>
+			</div>
+		</div>
+		<div class="row">
+			<a href="html_basics.html">
+
+			</a>
+
+			<a href="html_element.html">
+
+			</a>
+
+			<a href="html_pargraph.html">
+
+			</a>
+			
+			<a href="html_attributes.html">
+
+			</a>
+			
+			<a href="html_title.html">
+
+			</a>
+
+		</div>
+	</body>
+</html>
